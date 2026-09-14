@@ -39,7 +39,3 @@ El proyecto debe implementar una API REST segura para administrar:
 - Pruebas de casos válidos, datos inválidos, IDs inexistentes y reglas de negocio.
 - Controles de seguridad reutilizados de los laboratorios: Helmet, CORS restringido, límite de solicitudes, límite de tamaño JSON, validación por lista permitida y manejo seguro de errores.
 - Verificaciones SAST, SCA y DAST antes de la entrega.
-
-## Distinción de fuentes
-
-El contenido inicial de `src/` proviene de `API_HOSPITAL.zip` y funciona únicamente como guía de arquitectura y seguridad. Sus recursos hospitalarios (pacientes, médicos, especialidades y consultorios) no forman parte de los requisitos finales y deberán sustituirse por los cuatro recursos veterinarios anteriores.
