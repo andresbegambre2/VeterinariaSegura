@@ -78,6 +78,7 @@ Se puede crear un archivo `.env` tomando como referencia `.env.example`:
 ```env
 PORT=3000
 ALLOWED_ORIGIN=http://localhost:3000
+API_KEY=una_clave_de_64_caracteres_hexadecimales
 ```
 
 ## Ejecución
@@ -146,19 +147,6 @@ Para ejecutar las pruebas automatizadas:
 npm test
 ```
 
-Las pruebas verifican los casos válidos, campos obligatorios, identificadores inexistentes, relaciones entre recursos, duplicidad de agenda, estados de citas, encabezados de seguridad y protección frente a asignación masiva.
+Las pruebas verifican los casos válidos, campos obligatorios, identificadores inexistentes, relaciones entre recursos, duplicidad de agenda, estados de citas y acceso mediante API Key.
 
-## Seguridad
-
-La API incluye:
-
-- encabezados HTTP seguros con Helmet;
-- eliminación del encabezado `X-Powered-By`;
-- origen permitido configurable mediante CORS;
-- límite de solicitudes para las rutas de la API;
-- límite de 10 KB para cuerpos JSON;
-- validación y normalización de datos de entrada;
-- selección explícita de campos permitidos;
-- manejo centralizado de errores sin exponer detalles internos.
-
-Los datos se almacenan temporalmente en memoria, por lo que vuelven a su estado inicial cuando se reinicia el servidor.
+Los endpoints bajo `/api` requieren el encabezado `X-API-Key`. Los datos se almacenan temporalmente en memoria y vuelven a su estado inicial cuando se reinicia el servidor.

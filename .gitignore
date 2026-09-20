@@ -3,3 +3,7 @@ node_modules/
 coverage/
 npm-debug.log*
 semgrep-results.json
+entregables/
+tmp/
+zap-*.html
+REQUISITOS.md

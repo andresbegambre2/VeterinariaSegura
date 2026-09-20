@@ -6,6 +6,14 @@ const spec = swaggerJsdoc({
     info: { title: "VeterinariaSegura API", version: "1.0.0", description: "API REST segura para propietarios, mascotas, veterinarios y citas." },
     servers: [{ url: "http://localhost:3000" }],
     components: {
+      securitySchemes: {
+        ApiKeyAuth: {
+          type: "apiKey",
+          in: "header",
+          name: "X-API-Key",
+          description: "API Key requerida para consumir los endpoints protegidos."
+        }
+      },
       schemas: {
         Propietario: { type: "object", required: ["nombre", "documento", "telefono", "correo"], properties: { id: { type: "integer", readOnly: true }, nombre: { type: "string" }, documento: { type: "string" }, telefono: { type: "string" }, correo: { type: "string", format: "email" } } },
         Mascota: { type: "object", required: ["nombre", "especie", "raza", "edad", "propietarioId"], properties: { id: { type: "integer", readOnly: true }, nombre: { type: "string" }, especie: { type: "string" }, raza: { type: "string" }, edad: { type: "number", minimum: 0 }, propietarioId: { type: "integer" } } },
@@ -13,6 +21,7 @@ const spec = swaggerJsdoc({
         Cita: { type: "object", required: ["fecha", "hora", "motivo", "estado", "mascotaId", "veterinarioId"], properties: { id: { type: "integer", readOnly: true }, fecha: { type: "string", format: "date" }, hora: { type: "string", example: "09:00" }, motivo: { type: "string" }, estado: { type: "string", enum: ["programada", "confirmada", "atendida", "cancelada"] }, mascotaId: { type: "integer" }, veterinarioId: { type: "integer" } } }
       }
     },
+    security: [{ ApiKeyAuth: [] }],
     paths: Object.fromEntries([
       ["propietarios", "Propietario"], ["mascotas", "Mascota"], ["veterinarios", "Veterinario"], ["citas", "Cita"]
     ].flatMap(([path, schema]) => [

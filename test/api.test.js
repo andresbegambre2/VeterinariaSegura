@@ -4,6 +4,9 @@ const request = require("supertest");
 const app = require("../src/app");
 const { resetStore } = require("../src/data/store");
 
+const API_KEY = process.env.API_KEY;
+const api = (method, path) => request(app)[method](path).set("X-API-Key", API_KEY);
+
 test.beforeEach(resetStore);
 
 test("GET / responde y no expone X-Powered-By", async () => {
@@ -14,7 +17,7 @@ test("GET / responde y no expone X-Powered-By", async () => {
 });
 
 test("registra correctamente un propietario", async () => {
-  const response = await request(app).post("/api/propietarios").send({
+  const response = await api("post", "/api/propietarios").send({
     nombre: "Mario Perez", documento: "CC998877", telefono: "3009876543", correo: "mario@example.com"
   }).expect(201);
   assert.equal(response.body.id, 2);
@@ -22,76 +25,80 @@ test("registra correctamente un propietario", async () => {
 });
 
 test("rechaza un propietario sin nombre", async () => {
-  const response = await request(app).post("/api/propietarios").send({
+  const response = await api("post", "/api/propietarios").send({
     documento: "CC998877", telefono: "3009876543", correo: "mario@example.com"
   }).expect(400);
   assert.equal(response.body.mensaje, "Datos inválidos");
 });
 
 test("rechaza documentos duplicados", async () => {
-  await request(app).post("/api/propietarios").send({
+  await api("post", "/api/propietarios").send({
     nombre: "Otra persona", documento: "1001001", telefono: "3009876543", correo: "otra@example.com"
   }).expect(409);
 });
 
 test("registra una mascota con propietario válido", async () => {
-  const response = await request(app).post("/api/mascotas").send({
+  const response = await api("post", "/api/mascotas").send({
     nombre: "Milo", especie: "gato", raza: "Criollo", edad: 2, propietarioId: 1
   }).expect(201);
   assert.equal(response.body.propietarioId, 1);
 });
 
 test("rechaza una mascota con propietario inexistente", async () => {
-  await request(app).post("/api/mascotas").send({
+  await api("post", "/api/mascotas").send({
     nombre: "Milo", especie: "gato", raza: "Criollo", edad: 2, propietarioId: 999
   }).expect(400, { mensaje: "El propietario indicado no existe" });
 });
 
 test("crea una cita cuando mascota y veterinario existen", async () => {
-  const response = await request(app).post("/api/citas").send({
+  const response = await api("post", "/api/citas").send({
     fecha: "2026-10-02", hora: "10:30", motivo: "Vacunacion anual", estado: "programada", mascotaId: 1, veterinarioId: 1
   }).expect(201);
   assert.equal(response.body.id, 2);
 });
 
 test("rechaza una cita con veterinario inexistente", async () => {
-  await request(app).post("/api/citas").send({
+  await api("post", "/api/citas").send({
     fecha: "2026-10-02", hora: "10:30", motivo: "Vacunacion anual", estado: "programada", mascotaId: 1, veterinarioId: 999
   }).expect(400, { mensaje: "El veterinario indicado no existe" });
 });
 
 test("impide dos citas del veterinario en la misma fecha y hora", async () => {
-  await request(app).post("/api/citas").send({
+  await api("post", "/api/citas").send({
     fecha: "2026-10-01", hora: "09:00", motivo: "Otra consulta", estado: "confirmada", mascotaId: 1, veterinarioId: 1
   }).expect(409, { mensaje: "El veterinario ya tiene una cita en esa fecha y hora" });
 });
 
 test("responde 404 al consultar un ID inexistente", async () => {
-  await request(app).get("/api/mascotas/999").expect(404, { mensaje: "Mascota no encontrado" });
+  await api("get", "/api/mascotas/999").expect(404, { mensaje: "Mascota no encontrado" });
 });
 
 test("rechaza un estado inválido", async () => {
-  await request(app).patch("/api/citas/1/estado").send({ estado: "aplazada" }).expect(400);
+  await api("patch", "/api/citas/1/estado").send({ estado: "aplazada" }).expect(400);
 });
 
-test("no permite cancelar una cita atendida", async () => {
-  await request(app).patch("/api/citas/1/estado").send({ estado: "atendida" }).expect(200);
-  await request(app).patch("/api/citas/1/estado").send({ estado: "cancelada" }).expect(409, {
-    mensaje: "Una cita atendida no puede cancelarse"
+test("aplica la máquina de estados de las citas", async () => {
+  await api("patch", "/api/citas/1/estado").send({ estado: "atendida" }).expect(409, {
+    mensaje: "No se permite cambiar una cita de programada a atendida"
+  });
+  await api("patch", "/api/citas/1/estado").send({ estado: "confirmada" }).expect(200);
+  await api("patch", "/api/citas/1/estado").send({ estado: "atendida" }).expect(200);
+  await api("patch", "/api/citas/1/estado").send({ estado: "programada" }).expect(409, {
+    mensaje: "No se permite cambiar una cita de atendida a programada"
   });
 });
 
 test("consulta mascotas por propietario y citas por mascota/veterinario", async () => {
-  const mascotas = await request(app).get("/api/propietarios/1/mascotas").expect(200);
-  const citasMascota = await request(app).get("/api/mascotas/1/citas").expect(200);
-  const citasVeterinario = await request(app).get("/api/veterinarios/1/citas").expect(200);
+  const mascotas = await api("get", "/api/propietarios/1/mascotas").expect(200);
+  const citasMascota = await api("get", "/api/mascotas/1/citas").expect(200);
+  const citasVeterinario = await api("get", "/api/veterinarios/1/citas").expect(200);
   assert.equal(mascotas.body.length, 1);
   assert.equal(citasMascota.body.length, 1);
   assert.equal(citasVeterinario.body.length, 1);
 });
 
 test("descarta campos no permitidos para evitar Mass Assignment", async () => {
-  const response = await request(app).post("/api/propietarios").send({
+  const response = await api("post", "/api/propietarios").send({
     nombre: "Mario Perez", documento: "CC998877", telefono: "3009876543", correo: "mario@example.com", esAdmin: true
   }).expect(201);
   assert.equal(response.body.esAdmin, undefined);
@@ -105,13 +112,27 @@ test("publica un documento OpenAPI válido", async () => {
 });
 
 test("permite actualizar y eliminar un recurso sin relaciones", async () => {
-  const created = await request(app).post("/api/propietarios").send({
+  const created = await api("post", "/api/propietarios").send({
     nombre: "Mario Perez", documento: "CC998877", telefono: "3009876543", correo: "mario@example.com"
   }).expect(201);
-  const updated = await request(app).put(`/api/propietarios/${created.body.id}`).send({
+  const updated = await api("put", `/api/propietarios/${created.body.id}`).send({
     nombre: "Mario Alberto Perez", documento: "CC998877", telefono: "3009876543", correo: "mario@example.com"
   }).expect(200);
   assert.equal(updated.body.nombre, "Mario Alberto Perez");
-  await request(app).delete(`/api/propietarios/${created.body.id}`).expect(200);
-  await request(app).get(`/api/propietarios/${created.body.id}`).expect(404);
+  await api("delete", `/api/propietarios/${created.body.id}`).expect(200);
+  await api("get", `/api/propietarios/${created.body.id}`).expect(404);
+});
+
+test("protege /api con API Key", async () => {
+  await request(app).get("/api/mascotas").expect(401, { mensaje: "API Key requerida" });
+  await request(app).get("/api/mascotas").set("X-API-Key", "incorrecta").expect(401, { mensaje: "API Key inválida" });
+  await request(app).get(`/api/mascotas?apiKey=${API_KEY}`).expect(401, { mensaje: "API Key requerida" });
+  await api("get", "/api/mascotas").expect(200);
+});
+
+test("conserva la integridad referencial al eliminar", async () => {
+  await api("delete", "/api/propietarios/1").expect(409);
+  await api("delete", "/api/mascotas/1").expect(409);
+  await api("delete", "/api/veterinarios/1").expect(409);
+  await api("delete", "/api/mascotas/abc").expect(400);
 });

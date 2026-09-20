@@ -16,8 +16,19 @@ const service = createCrudService(store.citas, "Cita", { validate });
 
 service.updateEstado = (id, estado) => {
   const cita = service.getById(id);
-  if (cita.estado === "atendida" && estado === "cancelada") throw new HttpError(409, "Una cita atendida no puede cancelarse");
   if (!estados.includes(estado)) throw new HttpError(400, "Estado de cita no permitido");
+
+  const transicionesPermitidas = {
+    programada: ["confirmada", "cancelada"],
+    confirmada: ["atendida", "cancelada"],
+    atendida: [],
+    cancelada: []
+  };
+
+  if (!transicionesPermitidas[cita.estado].includes(estado)) {
+    throw new HttpError(409, `No se permite cambiar una cita de ${cita.estado} a ${estado}`);
+  }
+
   cita.estado = estado;
   return cita;
 };
