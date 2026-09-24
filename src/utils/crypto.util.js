@@ -1,0 +1,13 @@
+const crypto = require("crypto");
+
+const generarHash = (valor) => crypto.createHash("sha256").update(valor).digest("hex");
+
+const compararSeguro = (valorA, valorB) => {
+  const bufferA = Buffer.from(valorA, "utf8");
+  const bufferB = Buffer.from(valorB, "utf8");
+
+  if (bufferA.length !== bufferB.length) return false;
+  return crypto.timingSafeEqual(bufferA, bufferB);
+};
+
+module.exports = { generarHash, compararSeguro };

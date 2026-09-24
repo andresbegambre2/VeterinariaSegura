@@ -5,7 +5,6 @@ API REST para gestionar la información básica de una veterinaria. Permite admi
 Proyecto desarrollado por:
 
 - Andres Leonardo Begambre Vargas
-- Sara Valentina Caicedo Duarte
 
 ## Funcionalidades
 
@@ -78,7 +77,9 @@ Se puede crear un archivo `.env` tomando como referencia `.env.example`:
 ```env
 PORT=3000
 ALLOWED_ORIGIN=http://localhost:3000
-API_KEY=una_clave_de_64_caracteres_hexadecimales
+API_KEY_POSTMAN=primera_clave_de_64_caracteres_hexadecimales
+API_KEY_ADMIN=segunda_clave_de_64_caracteres_hexadecimales
+API_KEY_MOVIL=tercera_clave_de_64_caracteres_hexadecimales
 ```
 
 ## Ejecución
@@ -138,6 +139,7 @@ Direcciones disponibles:
 - `PUT /api/citas/:id`
 - `DELETE /api/citas/:id`
 - `PATCH /api/citas/:id/estado`
+- `GET /api/seguridad/cliente`
 
 ## Pruebas
 
@@ -149,4 +151,4 @@ npm test
 
 Las pruebas verifican los casos válidos, campos obligatorios, identificadores inexistentes, relaciones entre recursos, duplicidad de agenda, estados de citas y acceso mediante API Key.
 
-Los endpoints bajo `/api` requieren el encabezado `X-API-Key`. Los datos se almacenan temporalmente en memoria y vuelven a su estado inicial cuando se reinicia el servidor.
+Los endpoints bajo `/api` requieren el encabezado `X-API-Key`. Las claves representan clientes diferentes, se comparan mediante su hash y pueden habilitarse o deshabilitarse de forma independiente. Los datos se almacenan temporalmente en memoria y vuelven a su estado inicial cuando se reinicia el servidor.

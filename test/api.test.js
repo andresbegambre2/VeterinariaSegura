@@ -4,8 +4,10 @@ const request = require("supertest");
 const app = require("../src/app");
 const { resetStore } = require("../src/data/store");
 
-const API_KEY = process.env.API_KEY;
-const api = (method, path) => request(app)[method](path).set("X-API-Key", API_KEY);
+const API_KEY_POSTMAN = process.env.API_KEY_POSTMAN;
+const API_KEY_ADMIN = process.env.API_KEY_ADMIN;
+const API_KEY_MOVIL = process.env.API_KEY_MOVIL;
+const api = (method, path, clave = API_KEY_POSTMAN) => request(app)[method](path).set("X-API-Key", clave);
 
 test.beforeEach(resetStore);
 
@@ -109,6 +111,7 @@ test("publica un documento OpenAPI válido", async () => {
   assert.equal(response.body.openapi, "3.0.3");
   assert.ok(response.body.paths["/api/citas"]);
   assert.ok(response.body.paths["/api/citas/{id}/estado"]);
+  assert.ok(response.body.paths["/api/seguridad/cliente"]);
 });
 
 test("permite actualizar y eliminar un recurso sin relaciones", async () => {
@@ -126,8 +129,22 @@ test("permite actualizar y eliminar un recurso sin relaciones", async () => {
 test("protege /api con API Key", async () => {
   await request(app).get("/api/mascotas").expect(401, { mensaje: "API Key requerida" });
   await request(app).get("/api/mascotas").set("X-API-Key", "incorrecta").expect(401, { mensaje: "API Key inválida" });
-  await request(app).get(`/api/mascotas?apiKey=${API_KEY}`).expect(401, { mensaje: "API Key requerida" });
+  await request(app).get(`/api/mascotas?apiKey=${API_KEY_POSTMAN}`).expect(401, { mensaje: "API Key requerida" });
   await api("get", "/api/mascotas").expect(200);
+  await api("get", "/api/mascotas", API_KEY_ADMIN).expect(200);
+  await api("get", "/api/mascotas", API_KEY_MOVIL).expect(403, { mensaje: "API Key deshabilitada" });
+});
+
+test("identifica al cliente autenticado sin exponer su API Key", async () => {
+  const postman = await api("get", "/api/seguridad/cliente").expect(200);
+  assert.deepEqual(postman.body, {
+    mensaje: "Cliente autenticado",
+    cliente: { id: 1, nombre: "Postman Laboratorio" }
+  });
+
+  const admin = await api("get", "/api/seguridad/cliente", API_KEY_ADMIN).expect(200);
+  assert.deepEqual(admin.body.cliente, { id: 2, nombre: "Aplicación Administrativa" });
+  assert.equal(JSON.stringify(admin.body).includes(API_KEY_ADMIN), false);
 });
 
 test("conserva la integridad referencial al eliminar", async () => {

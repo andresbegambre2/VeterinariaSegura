@@ -50,4 +50,16 @@ spec.paths["/api/citas/{id}/estado"] = {
   }
 };
 
+spec.paths["/api/seguridad/cliente"] = {
+  get: {
+    tags: ["Seguridad"],
+    summary: "Obtener el cliente autenticado",
+    responses: {
+      200: { description: "Cliente autenticado correctamente" },
+      401: { description: "API Key ausente o inválida" },
+      403: { description: "API Key deshabilitada" }
+    }
+  }
+};
+
 module.exports = spec;
