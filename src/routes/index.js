@@ -8,6 +8,7 @@ const mascotas = require("../services/mascotas.service");
 const veterinarios = require("../services/veterinarios.service");
 const citas = require("../services/citas.service");
 const seguridadRoutes = require("./seguridad.routes");
+const authRoutes = require("./auth.routes");
 
 const router = express.Router();
 const propietariosRouter = crudRoutes(crudController(propietarios), "propietario");
@@ -25,5 +26,6 @@ router.use("/mascotas", mascotasRouter);
 router.use("/veterinarios", veterinariosRouter);
 router.use("/citas", citasRouter);
 router.use("/seguridad", seguridadRoutes);
+router.use("/auth", authRoutes);
 
 module.exports = router;

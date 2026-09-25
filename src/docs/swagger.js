@@ -50,6 +50,45 @@ spec.paths["/api/citas/{id}/estado"] = {
   }
 };
 
+spec.tags = [
+  ...(spec.tags || []),
+  { name: "Autenticación", description: "Registro e inicio de sesión de usuarios de VeterinariaSegura" }
+];
+spec.components.schemas.RegistroUsuario = {
+  type: "object",
+  additionalProperties: false,
+  required: ["nombre", "email", "password", "rol"],
+  properties: {
+    nombre: { type: "string", minLength: 3, maxLength: 100, example: "Dra. Laura Gómez" },
+    email: { type: "string", format: "email", example: "laura@veterinaria.com" },
+    password: { type: "string", format: "password", minLength: 10, maxLength: 72, example: "ClaveSegura2026!" },
+    rol: { type: "string", enum: ["administrador", "veterinario", "propietario"], example: "veterinario" }
+  }
+};
+spec.components.schemas.LoginUsuario = {
+  type: "object",
+  additionalProperties: false,
+  required: ["email", "password"],
+  properties: {
+    email: { type: "string", format: "email", example: "laura@veterinaria.com" },
+    password: { type: "string", format: "password", example: "ClaveSegura2026!" }
+  }
+};
+spec.paths["/api/auth/registro"] = {
+  post: {
+    tags: ["Autenticación"], summary: "Registrar un usuario",
+    requestBody: { required: true, content: { "application/json": { schema: { $ref: "#/components/schemas/RegistroUsuario" } } } },
+    responses: { 201: { description: "Usuario registrado" }, 400: { description: "Datos inválidos" }, 409: { description: "Email duplicado" } }
+  }
+};
+spec.paths["/api/auth/login"] = {
+  post: {
+    tags: ["Autenticación"], summary: "Iniciar sesión", description: "Verifica credenciales; este bloque aún no genera JWT.",
+    requestBody: { required: true, content: { "application/json": { schema: { $ref: "#/components/schemas/LoginUsuario" } } } },
+    responses: { 200: { description: "Autenticación correcta" }, 400: { description: "Datos inválidos" }, 401: { description: "Credenciales inválidas" }, 403: { description: "Usuario deshabilitado" } }
+  }
+};
+
 spec.paths["/api/seguridad/cliente"] = {
   get: {
     tags: ["Seguridad"],
