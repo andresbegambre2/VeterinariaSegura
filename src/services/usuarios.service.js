@@ -5,13 +5,17 @@ function obtenerUsuarioPorEmail(email) {
   return usuarios.find((usuario) => usuario.email === email.toLowerCase());
 }
 
+function obtenerUsuarioPorId(id) {
+  return usuarios.find((usuario) => usuario.id === Number(id));
+}
+
 async function crearUsuario(datos) {
   const usuario = {
     id: usuarios.length ? Math.max(...usuarios.map(({ id }) => id)) + 1 : 1,
     nombre: datos.nombre,
     email: datos.email.toLowerCase(),
     passwordHash: await generarPasswordHash(datos.password),
-    rol: datos.rol,
+    rol: "propietario",
     activo: true
   };
   usuarios.push(usuario);
@@ -24,4 +28,4 @@ async function verificarCredenciales(email, password) {
   return (await verificarPassword(password, usuario.passwordHash)) ? usuario : null;
 }
 
-module.exports = { obtenerUsuarioPorEmail, crearUsuario, verificarCredenciales };
+module.exports = { obtenerUsuarioPorEmail, obtenerUsuarioPorId, crearUsuario, verificarCredenciales };

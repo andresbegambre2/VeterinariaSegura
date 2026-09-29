@@ -57,12 +57,11 @@ spec.tags = [
 spec.components.schemas.RegistroUsuario = {
   type: "object",
   additionalProperties: false,
-  required: ["nombre", "email", "password", "rol"],
+  required: ["nombre", "email", "password"],
   properties: {
     nombre: { type: "string", minLength: 3, maxLength: 100, example: "Dra. Laura Gómez" },
     email: { type: "string", format: "email", example: "laura@veterinaria.com" },
-    password: { type: "string", format: "password", minLength: 10, maxLength: 72, example: "ClaveSegura2026!" },
-    rol: { type: "string", enum: ["administrador", "veterinario", "propietario"], example: "veterinario" }
+    password: { type: "string", format: "password", minLength: 10, maxLength: 72, example: "ClaveSegura2026!" }
   }
 };
 spec.components.schemas.LoginUsuario = {
@@ -77,6 +76,7 @@ spec.components.schemas.LoginUsuario = {
 spec.paths["/api/auth/registro"] = {
   post: {
     tags: ["Autenticación"], summary: "Registrar un usuario",
+    description: "Registra un nuevo usuario utilizando bcrypt para proteger la contraseña. El rol propietario es asignado por el servidor y no puede ser definido por el cliente.",
     requestBody: { required: true, content: { "application/json": { schema: { $ref: "#/components/schemas/RegistroUsuario" } } } },
     responses: { 201: { description: "Usuario registrado" }, 400: { description: "Datos inválidos" }, 409: { description: "Email duplicado" } }
   }

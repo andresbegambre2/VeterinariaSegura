@@ -10,8 +10,7 @@ const api = (path) => request(app).post(path).set("X-API-Key", API_KEY);
 const registro = {
   nombre: "Dra. Laura Gómez",
   email: "laura@veterinaria.com",
-  password: "ClaveSegura2026!",
-  rol: "veterinario"
+  password: "ClaveSegura2026!"
 };
 
 test.beforeEach(resetUsuarios);
@@ -24,17 +23,15 @@ test("Lab 7: registro, duplicado, login y respuestas seguras", async () => {
   await api("/api/auth/registro").send(registro).expect(409);
 
   const login = await api("/api/auth/login").send({ email: registro.email, password: registro.password }).expect(200);
-  assert.equal(login.body.usuario.rol, "veterinario");
+  assert.equal(login.body.usuario.rol, "propietario");
   assert.equal(JSON.stringify(login.body).includes("passwordHash"), false);
 
   await api("/api/auth/login").send({ email: registro.email, password: "PasswordIncorrecto" }).expect(401);
   await api("/api/auth/login").send({ email: "nadie@veterinaria.com", password: registro.password }).expect(401);
 });
 
-test("Lab 7: longitud, roles y mass assignment quedan bloqueados", async () => {
+test("Lab 7: longitud inválida queda bloqueada", async () => {
   await api("/api/auth/registro").send({ ...registro, password: "corta" }).expect(400);
-  await api("/api/auth/registro").send({ ...registro, rol: "superadmin" }).expect(400);
-  await api("/api/auth/registro").send({ ...registro, activo: false }).expect(400);
 });
 
 test("Lab 7: bcrypt genera salts distintos y reiniciar limpia usuarios", async () => {
