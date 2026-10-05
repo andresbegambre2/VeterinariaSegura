@@ -1,5 +1,6 @@
 const { matchedData } = require("express-validator");
 const usuariosService = require("../services/usuarios.service");
+const { generarToken } = require("../utils/jwt.util");
 
 const respuestaSegura = ({ id, nombre, email, rol, activo }) => ({ id, nombre, email, rol, activo });
 
@@ -22,7 +23,13 @@ async function login(req, res, next) {
     const usuario = await usuariosService.verificarCredenciales(datos.email, datos.password);
     if (!usuario) return res.status(401).json({ mensaje: "Credenciales inválidas" });
     if (!usuario.activo) return res.status(403).json({ mensaje: "Usuario deshabilitado" });
-    return res.status(200).json({ mensaje: "Autenticación correcta", usuario: respuestaSegura(usuario) });
+    const token = generarToken(usuario);
+    const { id, nombre, email, rol } = usuario;
+    return res.status(200).json({
+      mensaje: "Autenticación correcta",
+      usuario: { id, nombre, email, rol },
+      token
+    });
   } catch (error) {
     return next(error);
   }

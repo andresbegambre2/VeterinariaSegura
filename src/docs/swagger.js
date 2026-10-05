@@ -12,6 +12,12 @@ const spec = swaggerJsdoc({
           in: "header",
           name: "X-API-Key",
           description: "API Key requerida para consumir los endpoints protegidos."
+        },
+        BearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+          description: "JWT obtenido mediante el endpoint de login."
         }
       },
       schemas: {
@@ -83,9 +89,21 @@ spec.paths["/api/auth/registro"] = {
 };
 spec.paths["/api/auth/login"] = {
   post: {
-    tags: ["Autenticación"], summary: "Iniciar sesión", description: "Verifica credenciales; este bloque aún no genera JWT.",
+    tags: ["Autenticación"], summary: "Iniciar sesión", description: "Verifica las credenciales y genera un JWT temporal para acceder a rutas protegidas.",
     requestBody: { required: true, content: { "application/json": { schema: { $ref: "#/components/schemas/LoginUsuario" } } } },
     responses: { 200: { description: "Autenticación correcta" }, 400: { description: "Datos inválidos" }, 401: { description: "Credenciales inválidas" }, 403: { description: "Usuario deshabilitado" } }
+  }
+};
+spec.paths["/api/auth/perfil"] = {
+  get: {
+    tags: ["Autenticación"],
+    summary: "Obtener perfil del usuario autenticado",
+    description: "Requiere API Key y un JWT válido.",
+    security: [{ ApiKeyAuth: [], BearerAuth: [] }],
+    responses: {
+      200: { description: "Usuario autenticado correctamente" },
+      401: { description: "Credenciales de autenticación ausentes o inválidas" }
+    }
   }
 };
 

@@ -1,6 +1,8 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const request = require("supertest");
+process.env.JWT_SECRET ||= "secreto-solo-pruebas-veterinaria-con-longitud-suficiente-2026";
+process.env.JWT_EXPIRES_IN ||= "1h";
 const app = require("../src/app");
 const swagger = require("../src/docs/swagger");
 const { usuarios, resetUsuarios } = require("../src/data/usuarios");
