@@ -6,9 +6,10 @@ const documentField = body("documento").isString().trim().matches(/^[A-Za-z0-9-]
 const phone = body("telefono").isString().trim().matches(/^\+?[0-9 ]{7,15}$/);
 const email = body("correo").isEmail().normalizeEmail();
 
-const propietario = [text("nombre"), documentField, phone, email];
+const usuarioId = body("usuarioId").optional({ nullable: true }).isInt({ min: 1 }).toInt();
+const propietario = [text("nombre"), documentField, phone, email, usuarioId];
 const mascota = [text("nombre"), text("especie"), text("raza", 1), body("edad").isFloat({ min: 0 }).toFloat(), body("propietarioId").isInt({ min: 1 }).toInt()];
-const veterinario = [text("nombre"), documentField, text("especialidad"), phone, email];
+const veterinario = [text("nombre"), documentField, text("especialidad"), phone, email, usuarioId];
 const cita = [
   body("fecha").isISO8601({ strict: true }).withMessage("La fecha debe tener formato AAAA-MM-DD"),
   body("hora").matches(/^([01]\d|2[0-3]):[0-5]\d$/).withMessage("La hora debe tener formato HH:mm"),

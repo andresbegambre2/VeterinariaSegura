@@ -3,11 +3,15 @@ const assert = require("node:assert/strict");
 const request = require("supertest");
 const app = require("../src/app");
 const { resetStore } = require("../src/data/store");
+const { generarToken } = require("../src/utils/jwt.util");
 
 const API_KEY_POSTMAN = process.env.API_KEY_POSTMAN;
 const API_KEY_ADMIN = process.env.API_KEY_ADMIN;
 const API_KEY_MOVIL = process.env.API_KEY_MOVIL;
-const api = (method, path, clave = API_KEY_POSTMAN) => request(app)[method](path).set("X-API-Key", clave);
+const ADMIN_TOKEN = generarToken({ id: 900, email: "tests-admin@veterinaria.local", rol: "administrador" });
+const api = (method, path, clave = API_KEY_POSTMAN) => request(app)[method](path)
+  .set("X-API-Key", clave)
+  .set("Authorization", `Bearer ${ADMIN_TOKEN}`);
 
 test.beforeEach(resetStore);
 

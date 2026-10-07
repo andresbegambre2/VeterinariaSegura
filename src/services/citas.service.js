@@ -33,4 +33,16 @@ service.updateEstado = (id, estado) => {
   return cita;
 };
 
+service.getByPropietarioId = (propietarioId) => {
+  const mascotasIds = new Set(
+    store.mascotas
+      .filter((mascota) => mascota.propietarioId === Number(propietarioId))
+      .map((mascota) => mascota.id)
+  );
+  return store.citas.filter((cita) => mascotasIds.has(cita.mascotaId));
+};
+
+service.getByVeterinarioId = (veterinarioId) =>
+  store.citas.filter((cita) => cita.veterinarioId === Number(veterinarioId));
+
 module.exports = service;

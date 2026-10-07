@@ -80,6 +80,11 @@ ALLOWED_ORIGIN=http://localhost:3000
 API_KEY_POSTMAN=primera_clave_de_64_caracteres_hexadecimales
 API_KEY_ADMIN=segunda_clave_de_64_caracteres_hexadecimales
 API_KEY_MOVIL=tercera_clave_de_64_caracteres_hexadecimales
+JWT_SECRET=un_secreto_jwt_largo_y_aleatorio
+JWT_EXPIRES_IN=1h
+ADMIN_NOMBRE=Administrador Veterinaria
+ADMIN_EMAIL=admin@veterinaria.com
+ADMIN_PASSWORD=una_contrasena_segura
 ```
 
 ## Ejecución
@@ -139,7 +144,19 @@ Direcciones disponibles:
 - `PUT /api/citas/:id`
 - `DELETE /api/citas/:id`
 - `PATCH /api/citas/:id/estado`
+- `GET /api/citas/mis-citas`
+- `GET /api/citas/propietario/:propietarioId`
+- `GET /api/citas/veterinario/:veterinarioId`
 - `GET /api/seguridad/cliente`
+
+### Usuarios y autorización (Laboratorio 10)
+
+- `POST /api/usuarios`: solo un administrador puede crear usuarios con rol `veterinario` o `administrador`.
+- El registro público siempre crea usuarios con rol `propietario`.
+- Las operaciones administrativas requieren simultáneamente `X-API-Key` y `Authorization: Bearer <JWT>`.
+- Las citas se filtran por el propietario de la mascota o por el veterinario asociado al usuario autenticado.
+- Los intentos de consultar perfiles o citas ajenas responden `403 Forbidden`.
+- La lista global y todas las escrituras de citas son exclusivas del administrador.
 
 ## Pruebas
 
@@ -149,6 +166,6 @@ Para ejecutar las pruebas automatizadas:
 npm test
 ```
 
-Las pruebas verifican los casos válidos, campos obligatorios, identificadores inexistentes, relaciones entre recursos, duplicidad de agenda, estados de citas y acceso mediante API Key.
+Las pruebas verifican los casos válidos, campos obligatorios, identificadores inexistentes, relaciones entre recursos, duplicidad de agenda, estados de citas, API Key, JWT, RBAC y prevención de IDOR/BOLA.
 
 Los endpoints bajo `/api` requieren el encabezado `X-API-Key`. Las claves representan clientes diferentes, se comparan mediante su hash y pueden habilitarse o deshabilitarse de forma independiente. Los datos se almacenan temporalmente en memoria y vuelven a su estado inicial cuando se reinicia el servidor.

@@ -22,10 +22,43 @@ async function crearUsuario(datos) {
   return usuario;
 }
 
+async function crearUsuarioAdministrativo(datos) {
+  const usuario = {
+    id: usuarios.length ? Math.max(...usuarios.map(({ id }) => id)) + 1 : 1,
+    nombre: datos.nombre,
+    email: datos.email.toLowerCase(),
+    passwordHash: await generarPasswordHash(datos.password),
+    rol: datos.rol,
+    activo: true
+  };
+  usuarios.push(usuario);
+  return usuario;
+}
+
+async function crearAdministradorInicial() {
+  const nombre = process.env.ADMIN_NOMBRE;
+  const email = process.env.ADMIN_EMAIL;
+  const password = process.env.ADMIN_PASSWORD;
+  if (!nombre || !email || !password) {
+    console.warn("Administrador inicial no configurado");
+    return null;
+  }
+  const existente = obtenerUsuarioPorEmail(email);
+  if (existente) return existente;
+  return crearUsuarioAdministrativo({ nombre, email, password, rol: "administrador" });
+}
+
 async function verificarCredenciales(email, password) {
   const usuario = obtenerUsuarioPorEmail(email);
   if (!usuario) return null;
   return (await verificarPassword(password, usuario.passwordHash)) ? usuario : null;
 }
 
-module.exports = { obtenerUsuarioPorEmail, obtenerUsuarioPorId, crearUsuario, verificarCredenciales };
+module.exports = {
+  obtenerUsuarioPorEmail,
+  obtenerUsuarioPorId,
+  crearUsuario,
+  crearUsuarioAdministrativo,
+  crearAdministradorInicial,
+  verificarCredenciales
+};

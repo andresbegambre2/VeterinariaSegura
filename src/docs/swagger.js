@@ -21,9 +21,9 @@ const spec = swaggerJsdoc({
         }
       },
       schemas: {
-        Propietario: { type: "object", required: ["nombre", "documento", "telefono", "correo"], properties: { id: { type: "integer", readOnly: true }, nombre: { type: "string" }, documento: { type: "string" }, telefono: { type: "string" }, correo: { type: "string", format: "email" } } },
+        Propietario: { type: "object", required: ["nombre", "documento", "telefono", "correo"], properties: { id: { type: "integer", readOnly: true }, nombre: { type: "string" }, documento: { type: "string" }, telefono: { type: "string" }, correo: { type: "string", format: "email" }, usuarioId: { type: "integer", nullable: true, description: "Usuario con rol propietario asociado" } } },
         Mascota: { type: "object", required: ["nombre", "especie", "raza", "edad", "propietarioId"], properties: { id: { type: "integer", readOnly: true }, nombre: { type: "string" }, especie: { type: "string" }, raza: { type: "string" }, edad: { type: "number", minimum: 0 }, propietarioId: { type: "integer" } } },
-        Veterinario: { type: "object", required: ["nombre", "documento", "especialidad", "telefono", "correo"], properties: { id: { type: "integer", readOnly: true }, nombre: { type: "string" }, documento: { type: "string" }, especialidad: { type: "string" }, telefono: { type: "string" }, correo: { type: "string", format: "email" } } },
+        Veterinario: { type: "object", required: ["nombre", "documento", "especialidad", "telefono", "correo"], properties: { id: { type: "integer", readOnly: true }, nombre: { type: "string" }, documento: { type: "string" }, especialidad: { type: "string" }, telefono: { type: "string" }, correo: { type: "string", format: "email" }, usuarioId: { type: "integer", nullable: true, description: "Usuario con rol veterinario asociado" } } },
         Cita: { type: "object", required: ["fecha", "hora", "motivo", "estado", "mascotaId", "veterinarioId"], properties: { id: { type: "integer", readOnly: true }, fecha: { type: "string", format: "date" }, hora: { type: "string", example: "09:00" }, motivo: { type: "string" }, estado: { type: "string", enum: ["programada", "confirmada", "atendida", "cancelada"] }, mascotaId: { type: "integer" }, veterinarioId: { type: "integer" } } }
       }
     },
@@ -118,5 +118,75 @@ spec.paths["/api/seguridad/cliente"] = {
     }
   }
 };
+
+spec.tags.push({ name: "Usuarios", description: "Gestión administrativa de usuarios privilegiados" });
+spec.components.schemas.UsuarioAdministrativo = {
+  type: "object",
+  additionalProperties: false,
+  required: ["nombre", "email", "password", "rol"],
+  properties: {
+    nombre: { type: "string", minLength: 3, maxLength: 100 },
+    email: { type: "string", format: "email" },
+    password: { type: "string", format: "password", minLength: 10, maxLength: 72 },
+    rol: { type: "string", enum: ["veterinario", "administrador"] }
+  }
+};
+spec.paths["/api/usuarios"] = {
+  post: {
+    tags: ["Usuarios"],
+    summary: "Crear un usuario privilegiado",
+    security: [{ ApiKeyAuth: [], BearerAuth: [] }],
+    requestBody: { required: true, content: { "application/json": { schema: { $ref: "#/components/schemas/UsuarioAdministrativo" } } } },
+    responses: {
+      201: { description: "Usuario creado" },
+      400: { description: "Datos inválidos" },
+      401: { description: "Usuario no autenticado" },
+      403: { description: "Operación reservada al administrador" },
+      409: { description: "Correo ya registrado" }
+    }
+  }
+};
+spec.paths["/api/citas/mis-citas"] = {
+  get: {
+    tags: ["Cita"],
+    summary: "Obtener las citas del usuario autenticado",
+    security: [{ ApiKeyAuth: [], BearerAuth: [] }],
+    responses: {
+      200: { description: "Citas propias" },
+      401: { description: "Usuario no autenticado" },
+      403: { description: "Usuario sin perfil asociado o sin permiso" }
+    }
+  }
+};
+spec.paths["/api/citas/propietario/{propietarioId}"] = {
+  get: {
+    tags: ["Cita"],
+    summary: "Obtener citas de un propietario con control BOLA",
+    security: [{ ApiKeyAuth: [], BearerAuth: [] }],
+    parameters: [{ name: "propietarioId", in: "path", required: true, schema: { type: "integer", minimum: 1 } }],
+    responses: { 200: { description: "Citas autorizadas" }, 401: { description: "No autenticado" }, 403: { description: "Recurso ajeno" } }
+  }
+};
+spec.paths["/api/citas/veterinario/{veterinarioId}"] = {
+  get: {
+    tags: ["Cita"],
+    summary: "Obtener citas de un veterinario con control BOLA",
+    security: [{ ApiKeyAuth: [], BearerAuth: [] }],
+    parameters: [{ name: "veterinarioId", in: "path", required: true, schema: { type: "integer", minimum: 1 } }],
+    responses: { 200: { description: "Citas autorizadas" }, 401: { description: "No autenticado" }, 403: { description: "Recurso ajeno" } }
+  }
+};
+
+for (const [ruta, operaciones] of Object.entries(spec.paths)) {
+  if (/^\/api\/(propietarios|mascotas|veterinarios|citas)(\/|$)/.test(ruta)) {
+    for (const operacion of Object.values(operaciones)) {
+      if (operacion && typeof operacion === "object" && !Array.isArray(operacion) && operacion.responses) {
+        operacion.security = [{ ApiKeyAuth: [], BearerAuth: [] }];
+        operacion.responses[401] ||= { description: "Usuario no autenticado" };
+        operacion.responses[403] ||= { description: "Usuario sin permisos sobre el recurso" };
+      }
+    }
+  }
+}
 
 module.exports = spec;
