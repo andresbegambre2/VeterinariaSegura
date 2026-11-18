@@ -11,11 +11,18 @@ const validarApiKey = require("./middlewares/api-key");
 
 const app = express();
 app.disable("x-powered-by");
-app.use(helmet());
-app.use(cors({ origin: process.env.ALLOWED_ORIGIN || "http://localhost:3000", methods: ["GET", "POST", "PUT", "PATCH", "DELETE"] }));
+app.use(helmet({ contentSecurityPolicy: { directives: { fontSrc: ["'self'", "data:"], styleSrc: ["'self'", "'unsafe-inline'"] } } }));
+const allowedOrigins = (process.env.ALLOWED_ORIGIN || "http://localhost:5173").split(",").map((origin) => origin.trim()).filter(Boolean);
+app.use(cors({ origin: allowedOrigins, methods: ["GET", "POST", "PUT", "PATCH", "DELETE"] }));
 app.use(express.json({ limit: "10kb" }));
 app.use("/api", rateLimit({ windowMs: 15 * 60 * 1000, limit: 100, standardHeaders: "draft-8", legacyHeaders: false }));
-app.use("/api", validarApiKey);
+app.use("/api", (req, res, next) => {
+  // Browser clients do not receive a private API Key. Their resource routes
+  // enforce JWT, role, and ownership checks; non-browser integrations retain
+  // the API Key requirement.
+  if (req.get("Origin") && allowedOrigins.includes(req.get("Origin"))) return next();
+  return validarApiKey(req, res, next);
+});
 app.get("/", (req, res) => res.json({ mensaje: "API VeterinariaSegura funcionando" }));
 app.use("/api", routes);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));

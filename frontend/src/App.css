@@ -1,0 +1,119 @@
+/* LAB 12.3.1 — Estilos del dashboard; mantiene el diseño del login */
+.pantalla-login { min-height: 100vh; background: #f1f5f9; }
+.tarjeta-login { max-width: 440px; border-radius: 18px; }
+.marca-hospital { display: grid; place-items: center; width: 54px; height: 54px; border-radius: 13px; background: #0f766e; color: #fff; font-size: 23px; font-weight: 800; }
+.btn-hospital { background: #0f766e; color: #fff; font-weight: 600; padding: 12px; }
+.btn-hospital:hover, .btn-hospital:focus { background: #115e59; color: #fff; }
+.barra-hospital { background: #0f766e; }
+:root { --hospital-dark:#064b55; --hospital-teal:#0f8f90; --hospital-text:#14283c; }
+.hospital-layout { display:flex; min-height:100vh; background:#f0f6f9; color:var(--hospital-text); }
+.hospital-sidebar { position:sticky; top:0; width:254px; min-width:254px; height:100vh; background:linear-gradient(160deg,#074c55,#00646c 60%,#06414e); color:white; display:flex; flex-direction:column; z-index:40; }
+.hospital-logo { display:flex; align-items:center; gap:10px; font-size:20px; font-weight:800; padding:21px 20px; border-bottom:1px solid #ffffff20; }
+.hospital-logo-icon { background:white; color:#0a858e; border-radius:9px; font-size:21px; padding:4px 7px; }
+.hospital-menu-label { font-size:10px; letter-spacing:1.4px; color:#a9d6d9; padding:30px 20px 12px; }
+.hospital-menu { display:grid; gap:7px; padding:0 12px; }
+.hospital-menu button,.hospital-sidebar-footer button { background:transparent; border:0; text-align:left; color:#e5f8f8; padding:12px 14px; border-radius:9px; display:flex; align-items:center; gap:12px; font-size:14px; font-weight:600; }
+.hospital-menu button span,.hospital-sidebar-footer button span { font-size:22px; width:23px; line-height:1; text-align:center; }
+.hospital-menu button:hover,.hospital-menu button.activo { background:#0d999a; color:#fff; }
+.hospital-sidebar-footer { margin-top:auto; border-top:1px solid #ffffff30; padding:15px 12px; }
+.hospital-sidebar-footer button:hover { background:#ffffff18; }
+.hospital-main { min-width:0; flex:1; }
+.hospital-topbar { height:69px; display:flex; align-items:center; gap:16px; padding:0 30px; color:white; background:linear-gradient(100deg,#0a7779,#07969a); }
+.hospital-topbar-name { font-weight:750; }
+.hospital-user-chip { margin-left:auto; display:flex; gap:10px; align-items:center; }
+.hospital-user-chip strong { font-size:13px; display:block; line-height:1.1; }
+.hospital-user-chip small { font-size:11px; opacity:.85; display:block; }
+.hospital-avatar { border-radius:50%; background:#dff9f7; color:#0d777b; height:34px; width:34px; display:grid; place-items:center; font-weight:800; }
+.hospital-logout-top { border:1px solid #ffffff70; border-radius:6px; padding:6px 11px; color:white; background:transparent; font-size:12px; }
+.hospital-menu-toggle { display:none; border:0; color:white; background:transparent; font-size:23px; }
+.hospital-content { padding:22px 28px 16px; max-width:1800px; margin:0 auto; }
+.hospital-breadcrumb { color:#557185; font-size:12px; margin-bottom:15px; }
+.hospital-hero { min-height:220px; position:relative; overflow:hidden; border-radius:17px; background:linear-gradient(105deg,#edf9fc 0%,#e2f4f8 58%,#c7eef0 100%); display:flex; align-items:center; box-shadow:0 4px 16px #123c4b12; }
+.hospital-hero:after { content:""; position:absolute; height:48px; width:72%; bottom:-29px; right:-8%; border-radius:50%; background:#7de2df75; transform:rotate(-4deg); }
+.hospital-hero-text { padding:25px 30px; position:relative; z-index:2; max-width:63%; }
+.hospital-hero-text h1 { font-size:clamp(23px,2.5vw,34px); font-weight:800; margin-bottom:8px; }
+.hospital-hero-text p { font-size:14px; margin-bottom:13px; }
+.hospital-role-pill { display:inline-block; background:#c9f2f3; color:#06656a; padding:7px 13px; border-radius:30px; font-weight:700; font-size:12px; }
+.hospital-hero-image { position:absolute; right:0; top:0; height:100%; width:45%; object-fit:cover; object-position:center; mask-image:linear-gradient(to right,transparent 0%,black 33%); }
+.hospital-kpis { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:15px; margin:18px 0; }
+.hospital-card { border:1px solid #e3edf1; background:white; border-radius:13px; box-shadow:0 3px 13px #153c4b0a; }
+.hospital-kpi { display:flex; align-items:center; gap:14px; padding:18px; min-width:0; }
+.hospital-kpi-icon { display:grid; place-items:center; flex-shrink:0; width:53px; height:53px; background:#d8f3f3; border-radius:13px; color:#079b9c; font-size:27px; }
+.hospital-kpi-value { font-size:26px; font-weight:800; line-height:1.1; }
+.hospital-kpi-title { font-size:13px; font-weight:700; }
+.hospital-kpi small { color:#8398a7; font-size:10px; }
+.hospital-panels { display:grid; grid-template-columns:minmax(225px,1fr) minmax(330px,1.45fr) minmax(260px,1fr); gap:16px; }
+.hospital-panels>.hospital-card { padding:20px; min-width:0; }
+.hospital-panels h2 { font-size:17px; font-weight:800; margin:0 0 19px; }
+.hospital-profile h2 { background:#e0f6f6; padding:13px; border-radius:8px; }
+.hospital-profile p { font-size:13px; margin-bottom:13px; }
+.hospital-token-status { background:#e5f8e9; color:#16813b; font-size:12px; padding:10px 12px; border-radius:25px; display:inline-block; font-weight:700; }
+.hospital-module-grid { display:grid; gap:9px; }
+.hospital-module { width:100%; display:flex; align-items:center; gap:12px; text-align:left; background:#f8fbfd; border:1px solid #e0eaf0; border-radius:9px; padding:12px; }
+.hospital-module:hover { border-color:#0faaa8; background:#effafa; }
+.hospital-module-icon { color:#009d9c; font-size:26px; width:34px; text-align:center; }
+.hospital-module strong { display:block; font-size:12px; }
+.hospital-module small { display:block; font-size:11px; color:#667f90; }
+.hospital-module-arrow { margin-left:auto; color:#5c8290; font-size:22px; }
+.hospital-placeholder { text-align:center; padding:36px 8px; color:#78909d; }
+.hospital-placeholder span { font-size:48px; display:block; color:#42b7b8; }
+.hospital-placeholder strong { font-size:13px; display:block; color:#325367; margin:12px 0; }
+.hospital-placeholder p { font-size:12px; }
+.hospital-footer { padding:22px 0 4px; font-size:11px; color:#8197a4; text-align:center; }
+.hospital-overlay { display:none; }
+@media(max-width:1200px) { .hospital-panels { grid-template-columns:1fr 1.4fr; } .hospital-next { grid-column:1/-1; } }
+@media(max-width:900px) { .hospital-sidebar { position:fixed; transform:translateX(-100%); transition:transform .2s; } .hospital-sidebar-open { transform:translateX(0); } .hospital-overlay { display:block; position:fixed; inset:0; z-index:30; background:#001b26a8; border:0; } .hospital-menu-toggle { display:block; } .hospital-kpis { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:650px) { .hospital-content { padding:15px; } .hospital-topbar { padding:0 14px; gap:10px; } .hospital-topbar-name { display:none; } .hospital-user-chip strong { max-width:145px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; } .hospital-hero { min-height:250px; } .hospital-hero-text { max-width:100%; padding:20px; } .hospital-hero-image { width:70%; opacity:.22; mask-image:linear-gradient(to right,transparent,black); } .hospital-kpis { gap:9px; } .hospital-kpi { padding:12px; gap:8px; } .hospital-kpi-icon { width:39px; height:39px; font-size:21px; } .hospital-kpi-value { font-size:22px; } .hospital-panels { grid-template-columns:1fr; } .hospital-next { grid-column:auto; } }
+
+/* LAB 12.3.2 - Indicadores reales */
+.hospital-live {margin: 24px 0; display:grid; gap:16px}
+.hospital-live-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.hospital-live-heading h2{font-size:1.15rem;font-weight:800;margin:0}
+.hospital-live-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px}
+.hospital-live-kpi{padding:18px;display:flex;flex-direction:column;gap:5px;min-height:116px}
+.hospital-live-value{font-size:2rem;color:#087f87;line-height:1.1}
+.hospital-live-kpi>span{font-weight:650}
+.hospital-live-kpi small{font-size:11px}
+.hospital-live-panels{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.hospital-live-panel{padding:20px;min-width:0}
+.hospital-live-panel h3{font-size:1rem;font-weight:800;margin-bottom:18px}
+.hospital-live-states{display:grid;gap:13px}
+.hospital-live-state{display:grid;grid-template-columns:14px 1fr auto;align-items:center;gap:10px;text-transform:capitalize}
+.hospital-dot{height:11px;width:11px;border-radius:50%;background:#00a4ac}
+.estado-confirmada{background:#2563eb}.estado-atendida{background:#16a34a}.estado-cancelada{background:#e35a5a}
+.hospital-live-chart{display:flex;align-items:end;gap:12px;height:175px;border-bottom:1px solid #cbd5e1;padding:5px 4px 0}
+.hospital-live-bar-wrap{height:100%;min-width:36px;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px}
+.hospital-live-bar-wrap>span{font-size:12px;font-weight:700}
+.hospital-live-bar{width:65%;max-width:56px;min-height:4px;border-radius:5px 5px 0 0;background:linear-gradient(#10b9bd,#087a87)}
+.hospital-live-bar-wrap small{font-size:11px;white-space:nowrap}
+.hospital-live-note{font-size:11px;color:#64748b;margin:12px 0 0}
+@media(max-width:850px){.hospital-live-panels{grid-template-columns:1fr}}
+/* VeterinariaSegura workspace */
+.vet-shell{min-height:100vh;display:flex;background:#f1f7f8;color:#183c45;font-family:Inter,"Segoe UI",sans-serif}
+.vet-sidebar{width:252px;min-height:100vh;background:#075e63;color:#eafafa;display:flex;flex-direction:column;padding:22px 15px;position:fixed;inset:0 auto 0 0;z-index:5}
+.vet-brand{border:0;background:none;color:#fff;display:flex;align-items:center;gap:11px;text-align:left;font-size:17px;font-weight:750;padding:5px 8px 32px}
+.vet-brand-mark{width:34px;height:34px;border-radius:11px;background:#fff;color:#087b7c;display:grid;place-items:center;font-size:22px;font-weight:800}
+.vet-brand-sub{display:block;font-size:11px;font-weight:500;color:#b4dbd9;letter-spacing:.08em}
+.vet-menu-caption{font-size:10px;font-weight:700;letter-spacing:.12em;color:#a6d0cd;margin:0 9px 12px}
+.vet-nav{width:100%;display:flex;align-items:center;gap:12px;border:0;background:transparent;color:#e7f5f5;text-align:left;border-radius:9px;padding:11px 12px;margin:2px 0;font-size:13px}
+.vet-nav span{width:20px;text-align:center}.vet-nav:hover,.vet-nav.active{background:#0c8584;color:#fff}
+.vet-sidebar-bottom{margin-top:auto;border-top:1px solid #ffffff28;padding:16px 5px 2px;display:flex;align-items:center;gap:8px}
+.vet-avatar{width:31px;height:31px;border-radius:50%;background:#b9e6df;color:#075e63;display:grid;place-items:center;font-weight:700}
+.vet-user{min-width:0;display:flex;flex:1;flex-direction:column;font-size:11px}.vet-user b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.vet-user small{color:#b4d9d7;text-transform:capitalize}
+.vet-logout{background:transparent;border:1px solid #ffffff55;border-radius:7px;color:#fff;font-size:11px;padding:5px 8px}
+.vet-main{margin-left:252px;width:calc(100% - 252px);min-height:100vh}
+.vet-topbar{height:58px;background:#fff;border-bottom:1px solid #e2eced;display:flex;justify-content:space-between;align-items:center;padding:0 30px;font-size:12px;color:#078181}
+.vet-topbar b{margin-left:7px;color:#1d424c}.vet-top-user{color:#274650}.vet-top-user small{margin-left:9px;color:#6f9197;text-transform:capitalize}
+.vet-content{max-width:1320px;margin:0 auto;padding:28px 32px 45px}
+.vet-welcome{min-height:157px;border-radius:15px;padding:26px 31px;background:linear-gradient(108deg,#e5f6f6 0%,#dff2f2 62%,#c9eae4 100%);display:flex;align-items:center;justify-content:space-between;overflow:hidden;position:relative}
+.vet-welcome small{color:#537980;font-size:12px}.vet-welcome h1{font-size:27px;font-weight:750;margin:5px 0;color:#153b45}.vet-welcome p{color:#54767b;font-size:13px;margin:0 0 12px}.vet-role-pill{display:inline-block;border-radius:20px;background:#c3e9e5;color:#087977;padding:5px 12px;font-size:11px;text-transform:capitalize;font-weight:650}
+.vet-paw-art{font-size:85px;opacity:.72;transform:rotate(-12deg);padding:0 38px}
+.vet-section-heading{display:flex;justify-content:space-between;align-items:end;margin:26px 1px 13px}.vet-section-heading h2,.vet-panel-title h2{font-size:17px;font-weight:750;margin:0;color:#203f48}.vet-section-heading p,.vet-panel-title p{margin:4px 0 0;color:#718b90;font-size:12px}
+.vet-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:14px 0 22px}
+.vet-stat{min-height:103px;border:1px solid #e5eeee;background:#fff;border-radius:12px;padding:16px 19px;display:grid;grid-template-columns:38px 1fr;grid-template-rows:1fr 1fr;column-gap:11px;text-align:left;box-shadow:0 4px 16px #315d6310}
+.vet-stat>span{grid-row:span 2;width:38px;height:38px;border-radius:10px;background:#e4f5f3;display:grid;place-items:center;font-size:20px}.vet-stat b{font-size:20px;color:#1e4750}.vet-stat small{font-size:11px;color:#71888c}.vet-stat:hover,.vet-shortcuts button:hover{transform:translateY(-2px);box-shadow:0 8px 22px #315d631b}
+.vet-panel{background:#fff;border:1px solid #e5eeee;border-radius:13px;padding:20px 22px;box-shadow:0 4px 16px #315d630c}.vet-panel-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:17px}
+.vet-shortcuts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}.vet-shortcuts button{border:1px solid #e5eeee;background:#fff;border-radius:10px;padding:15px;text-align:left;display:grid;gap:7px;color:#274750;transition:.15s}.vet-shortcuts button>span{font-size:21px;color:#078381}.vet-shortcuts button b{font-size:13px}.vet-shortcuts button small{font-size:11px;color:#718b90}
+.vet-refresh{border:1px solid #0b8581;color:#087c79;background:#fff;border-radius:7px;padding:7px 12px;font-size:12px}.vet-refresh:hover{background:#edf9f7}.vet-data-panel{margin-top:22px}.vet-table-wrap{overflow:auto}.vet-table{width:100%;border-collapse:collapse;font-size:12px}.vet-table th{background:#f5f9f9;color:#58757a;font-weight:650;text-align:left;white-space:nowrap}.vet-table th,.vet-table td{padding:11px 12px;border-bottom:1px solid #e8eeee;max-width:280px;overflow-wrap:anywhere}.vet-table td{color:#36565d}.vet-empty{padding:28px 8px;color:#748c91;text-align:center;font-size:13px}.vet-error{padding:12px 14px;border-radius:8px;background:#fff0ee;color:#9a3d32;font-size:12px;margin:10px 0}
+@media(max-width:900px){.vet-sidebar{width:215px}.vet-main{margin-left:215px;width:calc(100% - 215px)}.vet-content{padding:22px 20px}.vet-paw-art{padding:0 10px}}
+@media(max-width:620px){.vet-sidebar{width:64px;padding:14px 7px}.vet-brand{padding:5px 6px 24px}.vet-brand>span:last-child,.vet-menu-caption,.vet-nav:not(.active){font-size:0}.vet-brand-mark{flex-shrink:0}.vet-nav{justify-content:center;padding:12px 5px;font-size:0}.vet-nav span{font-size:17px}.vet-nav.active{font-size:0}.vet-sidebar-bottom{flex-direction:column}.vet-user,.vet-logout{display:none}.vet-main{margin-left:64px;width:calc(100% - 64px)}.vet-content{padding:15px 12px}.vet-topbar{padding:0 14px}.vet-welcome{padding:19px;min-height:135px}.vet-welcome h1{font-size:21px}.vet-paw-art{font-size:52px;padding:0}.vet-stats{grid-template-columns:1fr}.vet-panel{padding:16px 13px}}

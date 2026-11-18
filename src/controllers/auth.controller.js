@@ -7,7 +7,7 @@ const respuestaSegura = ({ id, nombre, email, rol, activo }) => ({ id, nombre, e
 async function registrar(req, res, next) {
   try {
     const datos = matchedData(req, { locations: ["body"] });
-    if (usuariosService.obtenerUsuarioPorEmail(datos.email)) {
+    if (await usuariosService.obtenerUsuarioPorEmail(datos.email)) {
       return res.status(409).json({ mensaje: "Ya existe un usuario con ese correo electrónico" });
     }
     const usuario = await usuariosService.crearUsuario(datos);
@@ -35,4 +35,14 @@ async function login(req, res, next) {
   }
 }
 
-module.exports = { registrar, login };
+async function cambiarPassword(req, res, next) {
+  try {
+    const datos = matchedData(req, { locations: ["body"] });
+    await usuariosService.actualizarPassword(req.usuario.id, datos.passwordActual, datos.passwordNueva);
+    return res.status(200).json({ mensaje: "Contraseña actualizada. Inicie sesión nuevamente." });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+module.exports = { registrar, login, cambiarPassword };

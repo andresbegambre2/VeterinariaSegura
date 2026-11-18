@@ -7,3 +7,8 @@ entregables/
 tmp/
 zap-*.html
 REQUISITOS.md
+
+.env
+.env.*
+!.env.example
+node_modules/

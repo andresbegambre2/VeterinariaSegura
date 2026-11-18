@@ -1,38 +1,16 @@
-const { store } = require("../data/store");
-const createCrudService = require("./base.service");
-const HttpError = require("./http-error");
-const usuariosService = require("./usuarios.service");
-
-const service = createCrudService(store.propietarios, "Propietario", {
-  validate(data, currentId) {
-    if (store.propietarios.some((p) => p.documento === data.documento && p.id !== currentId)) {
-      throw new HttpError(409, "Ya existe un propietario con ese documento");
-    }
-    if (store.propietarios.some((p) => p.correo.toLowerCase() === data.correo.toLowerCase() && p.id !== currentId)) {
-      throw new HttpError(409, "Ya existe un propietario con ese correo");
-    }
+const crud = require('./base.service');
+const { consultar } = require('../config/database');
+const usuarios = require('./usuarios.service');
+const HttpError = require('./http-error');
+const service = crud('propietarios', {"nombre": "nombre", "documento": "documento", "telefono": "telefono", "correo": "correo", "usuarioId": "usuario_id"}, 'Propietario', {
+  async validate(data) {
     if (data.usuarioId != null) {
-      const usuario = usuariosService.obtenerUsuarioPorId(data.usuarioId);
-      if (!usuario) throw new HttpError(400, "El usuario indicado no existe");
-      if (usuario.rol !== "propietario") throw new HttpError(409, "El usuario debe tener rol propietario");
-      if (store.propietarios.some((p) => p.usuarioId === data.usuarioId && p.id !== currentId)) {
-        throw new HttpError(409, "El usuario ya está asociado a otro propietario");
-      }
-    }
-  },
-  beforeRemove(id) {
-    if (store.mascotas.some((m) => m.propietarioId === id)) {
-      throw new HttpError(409, "No se puede eliminar un propietario que tiene mascotas");
+      const user = await usuarios.obtenerUsuarioPorId(data.usuarioId);
+      if (!user) throw new HttpError(400,'El usuario indicado no existe');
+      if (user.rol !== 'propietario' || !user.activo) throw new HttpError(409,'El usuario debe estar activo y tener rol propietario');
     }
   }
 });
-
-service.getMascotas = (id) => {
-  service.getById(id);
-  return store.mascotas.filter((m) => m.propietarioId === Number(id));
-};
-
-service.getByUsuarioId = (usuarioId) =>
-  store.propietarios.find((propietario) => propietario.usuarioId === Number(usuarioId));
-
+service.getByUsuarioId = id => service.findOne('usuario_id=$1',[id]);
+service.getMascotas = async id => { await service.getById(id); return (await consultar('SELECT id,nombre,especie,raza,edad,propietario_id AS "propietarioId" FROM public.mascotas WHERE propietario_id=$1 ORDER BY id',[id])).rows; };
 module.exports = service;

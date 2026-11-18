@@ -13,7 +13,11 @@ function obtenerConfiguracionJWT() {
 
 function generarToken(usuario) {
   const { secret, expiresIn } = obtenerConfiguracionJWT();
-  const payload = { email: usuario.email, rol: usuario.rol };
+  const payload = {
+    email: usuario.email,
+    rol: usuario.rol,
+    ver: Number(usuario.versionSesion ?? 1)
+  };
 
   return jwt.sign(payload, secret, {
     algorithm: "HS256",

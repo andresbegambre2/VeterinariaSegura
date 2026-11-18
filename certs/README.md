@@ -1,0 +1,1 @@
+Descarga la CA desde tu proyecto Supabase y guárdala como prod-ca-2021.crt. No reutilices un certificado privado ni desactives rejectUnauthorized. Si no existe el archivo, Node usa sus autoridades públicas de confianza. El certificado de ejemplo del insumo no se carga automáticamente.

@@ -1,4 +1,4 @@
-const { body } = require("express-validator");
+const { body, query } = require("express-validator");
 
 const validarCreacionUsuario = [
   body("nombre").isString().trim().isLength({ min: 3, max: 100 })
@@ -11,4 +11,9 @@ const validarCreacionUsuario = [
     .withMessage("El rol debe ser veterinario o administrador")
 ];
 
-module.exports = { validarCreacionUsuario };
+const validarBusquedaRecuperacion = [
+  query("q").isString().trim().isLength({ min: 2, max: 100 })
+    .withMessage("La búsqueda debe tener entre 2 y 100 caracteres")
+];
+
+module.exports = { validarCreacionUsuario, validarBusquedaRecuperacion };

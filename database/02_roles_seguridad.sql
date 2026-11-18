@@ -1,0 +1,11 @@
+BEGIN;
+INSERT INTO public.roles(nombre,descripcion) VALUES ('administrador','Administración'),('veterinario','Profesional veterinario'),('propietario','Responsable de mascotas') ON CONFLICT(nombre) DO NOTHING;
+ALTER TABLE public.roles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.usuarios ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.propietarios ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.veterinarios ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.mascotas ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.citas ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE public.roles,public.usuarios,public.propietarios,public.veterinarios,public.mascotas,public.citas FROM anon, authenticated;
+REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM anon, authenticated;
+COMMIT;

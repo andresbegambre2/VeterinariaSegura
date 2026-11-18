@@ -3,8 +3,8 @@ const swaggerJsdoc = require("swagger-jsdoc");
 const spec = swaggerJsdoc({
   definition: {
     openapi: "3.0.3",
-    info: { title: "VeterinariaSegura API", version: "1.0.0", description: "API REST segura para propietarios, mascotas, veterinarios y citas." },
-    servers: [{ url: "http://localhost:3000" }],
+    info: { title: "VeterinariaSegura API", version: "1.0.0", description: "API REST con persistencia PostgreSQL en Supabase. IDs BIGINT pueden devolverse como cadenas. POST crea citas programadas; los cambios de estado se realizan con PATCH /api/citas/{id}/estado." },
+    servers: [{ url: `http://localhost:${process.env.PORT || 3000}` }],
     components: {
       securitySchemes: {
         ApiKeyAuth: {
@@ -24,7 +24,7 @@ const spec = swaggerJsdoc({
         Propietario: { type: "object", required: ["nombre", "documento", "telefono", "correo"], properties: { id: { type: "integer", readOnly: true }, nombre: { type: "string" }, documento: { type: "string" }, telefono: { type: "string" }, correo: { type: "string", format: "email" }, usuarioId: { type: "integer", nullable: true, description: "Usuario con rol propietario asociado" } } },
         Mascota: { type: "object", required: ["nombre", "especie", "raza", "edad", "propietarioId"], properties: { id: { type: "integer", readOnly: true }, nombre: { type: "string" }, especie: { type: "string" }, raza: { type: "string" }, edad: { type: "number", minimum: 0 }, propietarioId: { type: "integer" } } },
         Veterinario: { type: "object", required: ["nombre", "documento", "especialidad", "telefono", "correo"], properties: { id: { type: "integer", readOnly: true }, nombre: { type: "string" }, documento: { type: "string" }, especialidad: { type: "string" }, telefono: { type: "string" }, correo: { type: "string", format: "email" }, usuarioId: { type: "integer", nullable: true, description: "Usuario con rol veterinario asociado" } } },
-        Cita: { type: "object", required: ["fecha", "hora", "motivo", "estado", "mascotaId", "veterinarioId"], properties: { id: { type: "integer", readOnly: true }, fecha: { type: "string", format: "date" }, hora: { type: "string", example: "09:00" }, motivo: { type: "string" }, estado: { type: "string", enum: ["programada", "confirmada", "atendida", "cancelada"] }, mascotaId: { type: "integer" }, veterinarioId: { type: "integer" } } }
+        Cita: { type: "object", required: ["fecha", "hora", "motivo", "mascotaId", "veterinarioId"], properties: { id: { type: "integer", readOnly: true }, fecha: { type: "string", format: "date" }, hora: { type: "string", example: "09:00" }, motivo: { type: "string" }, estado: { type: "string", enum: ["programada", "confirmada", "atendida", "cancelada"] }, mascotaId: { type: "integer" }, veterinarioId: { type: "integer" } } }
       }
     },
     security: [{ ApiKeyAuth: [] }],

@@ -15,4 +15,16 @@ const validarLogin = [
   checkExact([], { message: "El cuerpo contiene campos no permitidos" })
 ];
 
-module.exports = { validarRegistro, validarLogin };
+const validarCambioPassword = [
+  body("passwordActual").isString().notEmpty().withMessage("La contraseña actual es obligatoria"),
+  body("passwordNueva").isString().isLength({ min: 12, max: 72 })
+    .withMessage("La nueva contraseña debe tener entre 12 y 72 caracteres")
+    .matches(/[a-z]/).withMessage("Incluya una minúscula")
+    .matches(/[A-Z]/).withMessage("Incluya una mayúscula")
+    .matches(/[0-9]/).withMessage("Incluya un número"),
+  body("confirmarPassword").custom((value, { req }) => value === req.body.passwordNueva)
+    .withMessage("La confirmación no coincide"),
+  checkExact([], { message: "El cuerpo contiene campos no permitidos" })
+];
+
+module.exports = { validarRegistro, validarLogin, validarCambioPassword };

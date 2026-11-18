@@ -1,171 +1,59 @@
-# VeterinariaSegura
+# VeterinariaSegura — Bloque 7
 
-API REST para gestionar la información básica de una veterinaria. Permite administrar propietarios, mascotas, veterinarios y citas, aplicando validaciones, reglas de negocio y controles de seguridad.
+Migración preparada de usuarios, propietarios, mascotas, veterinarios y citas a PostgreSQL en Supabase. Mantiene los endpoints, API Keys, bcrypt/JWT, roles, validación y controles de propiedad.
 
-Proyecto desarrollado por:
+**Empieza por [GUIA_SUPABASE.md](GUIA_SUPABASE.md).** Contiene los pasos desde crear el proyecto hasta ejecutar SQL, configurar `.env`, instalar dependencias, probar y capturar evidencias.
 
-- Andres Leonardo Begambre Vargas
+**Informe de seguridad:** [pruebas SCA, SAST, DAST y API de ambos proyectos](docs/Informe_Pruebas_Seguridad.pdf).
 
-## Funcionalidades
+## Cambios
 
-- Registro, consulta, actualización y eliminación de propietarios.
-- Registro, consulta, actualización y eliminación de mascotas.
-- Registro, consulta, actualización y eliminación de veterinarios.
-- Programación y administración de citas veterinarias.
-- Consulta de mascotas asociadas a un propietario.
-- Consulta de citas por mascota y por veterinario.
-- Actualización del estado de una cita.
-- Documentación interactiva con Swagger UI.
+- Conexión reutilizable `src/config/database.js`, pool y TLS verificado.
+- SQL parametrizado y services asíncronos para todos los recursos persistidos.
+- Usuarios persistentes y administrador inicial idempotente.
+- JWT consulta cuenta, estado y rol vigente en PostgreSQL.
+- BOLA usa relaciones reales e IDs sin redondear BIGINT.
+- Restricciones FK, índices de unicidad y reserva de agenda.
+- Transiciones de citas validadas de forma atómica.
+- Scripts de esquema, seguridad y verificación en `database/`.
+- Pruebas separadas de la implementación antigua en memoria.
 
-## Reglas de negocio
+## Estado y validación
 
-- Una mascota debe estar asociada a un propietario existente.
-- Una cita debe relacionar una mascota y un veterinario existentes.
-- Un veterinario no puede tener dos citas en la misma fecha y hora.
-- Una cita atendida no puede cancelarse.
-- Los estados permitidos son `programada`, `confirmada`, `atendida` y `cancelada`.
-- Los documentos y correos de propietarios y veterinarios no pueden repetirse.
-- No se puede eliminar un recurso mientras tenga registros relacionados.
+El backend y la base Supabase están configurados en el entorno local. `npm test`, `npm run db:check`, y en el frontend `npm run lint` y `npm run build` son los comandos de validación. Las pruebas de integración HTTP y PostgreSQL requieren las variables locales y se reportan por separado cuando no están habilitadas.
 
-## Tecnologías
+Las fuentes históricas `src/data/` se conservan para referencia; los servicios de negocio ya no las consultan. API Keys continúan configuradas mediante variables de entorno. Los README_BLOQUE del hospital se conservan como material del insumo; sus estados reportados no certifican este entorno.
 
-- Node.js
-- Express
-- express-validator
-- Helmet
-- CORS
-- express-rate-limit
-- Swagger y OpenAPI 3.0
-- Node Test Runner y Supertest
+## Bloques 7.5.1 y 8
 
-## Estructura
-
-```text
-VeterinariaSegura/
-|-- src/
-|   |-- controllers/
-|   |-- data/
-|   |-- docs/
-|   |-- middlewares/
-|   |-- routes/
-|   |-- services/
-|   |-- app.js
-|   `-- server.js
-|-- test/
-|-- .env.example
-|-- package.json
-|-- README.md
-`-- REQUISITOS.md
-```
-
-El flujo principal de una solicitud es:
-
-```text
-Solicitud -> Ruta -> Validación -> Controlador -> Servicio -> Datos
-```
-
-## Instalación
-
-Es necesario tener Node.js instalado. Después de descargar o clonar el repositorio, se ejecutan los siguientes comandos:
+El primer administrador se crea mediante un proceso explícito y separado del arranque HTTP:
 
 ```bash
-npm install
+npm run seed:admin
 ```
 
-Se puede crear un archivo `.env` tomando como referencia `.env.example`:
+`npm start` y `npm run dev` solo inician la API y no crean ni modifican usuarios. Las variables `ADMIN_NOMBRE`, `ADMIN_EMAIL` y `ADMIN_PASSWORD` son temporales, deben suministrarse únicamente durante la inicialización y retirarse después.
 
-```env
-PORT=3000
-ALLOWED_ORIGIN=http://localhost:3000
-API_KEY_POSTMAN=primera_clave_de_64_caracteres_hexadecimales
-API_KEY_ADMIN=segunda_clave_de_64_caracteres_hexadecimales
-API_KEY_MOVIL=tercera_clave_de_64_caracteres_hexadecimales
-JWT_SECRET=un_secreto_jwt_largo_y_aleatorio
-JWT_EXPIRES_IN=1h
-ADMIN_NOMBRE=Administrador Veterinaria
-ADMIN_EMAIL=admin@veterinaria.com
-ADMIN_PASSWORD=una_contrasena_segura
-```
+Documentación de ejecución y validación:
 
-## Ejecución
+- [Bloque 7.5.1 - bootstrap administrativo](README_BLOQUE_7_5_1_BOOTSTRAP_ADMIN.md)
+- [Laboratorio 8 - validación integral](README_BLOQUE_8.md)
 
-Para iniciar la API:
-
-```bash
-npm start
-```
-
-Para trabajar con reinicio automático:
-
-```bash
-npm run dev
-```
-
-Direcciones disponibles:
-
-- API: `http://localhost:3000`
-- Swagger UI: `http://localhost:3000/api-docs`
-- Documento OpenAPI: `http://localhost:3000/openapi.json`
-
-## Endpoints
-
-### Propietarios
-
-- `GET /api/propietarios`
-- `GET /api/propietarios/:id`
-- `POST /api/propietarios`
-- `PUT /api/propietarios/:id`
-- `DELETE /api/propietarios/:id`
-- `GET /api/propietarios/:id/mascotas`
-
-### Mascotas
-
-- `GET /api/mascotas`
-- `GET /api/mascotas/:id`
-- `POST /api/mascotas`
-- `PUT /api/mascotas/:id`
-- `DELETE /api/mascotas/:id`
-- `GET /api/mascotas/:id/citas`
-
-### Veterinarios
-
-- `GET /api/veterinarios`
-- `GET /api/veterinarios/:id`
-- `POST /api/veterinarios`
-- `PUT /api/veterinarios/:id`
-- `DELETE /api/veterinarios/:id`
-- `GET /api/veterinarios/:id/citas`
-
-### Citas
-
-- `GET /api/citas`
-- `GET /api/citas/:id`
-- `POST /api/citas`
-- `PUT /api/citas/:id`
-- `DELETE /api/citas/:id`
-- `PATCH /api/citas/:id/estado`
-- `GET /api/citas/mis-citas`
-- `GET /api/citas/propietario/:propietarioId`
-- `GET /api/citas/veterinario/:veterinarioId`
-- `GET /api/seguridad/cliente`
-
-### Usuarios y autorización (Laboratorio 10)
-
-- `POST /api/usuarios`: solo un administrador puede crear usuarios con rol `veterinario` o `administrador`.
-- El registro público siempre crea usuarios con rol `propietario`.
-- Las operaciones administrativas requieren simultáneamente `X-API-Key` y `Authorization: Bearer <JWT>`.
-- Las citas se filtran por el propietario de la mascota o por el veterinario asociado al usuario autenticado.
-- Los intentos de consultar perfiles o citas ajenas responden `403 Forbidden`.
-- La lista global y todas las escrituras de citas son exclusivas del administrador.
-
-## Pruebas
-
-Para ejecutar las pruebas automatizadas:
+Pruebas automatizadas:
 
 ```bash
 npm test
+npm run test:bootstrap
 ```
 
-Las pruebas verifican los casos válidos, campos obligatorios, identificadores inexistentes, relaciones entre recursos, duplicidad de agenda, estados de citas, API Key, JWT, RBAC y prevención de IDOR/BOLA.
+## Guías por componente
 
-Los endpoints bajo `/api` requieren el encabezado `X-API-Key`. Las claves representan clientes diferentes, se comparan mediante su hash y pueden habilitarse o deshabilitarse de forma independiente. Los datos se almacenan temporalmente en memoria y vuelven a su estado inicial cuando se reinicia el servidor.
+- Backend / API: [backend/README.md](backend/README.md)
+- Base de datos: [database/README.md](database/README.md)
+- Frontend: [frontend/README.md](frontend/README.md)
+
+## Frontend
+
+La interfaz React está en `frontend/`. Configura `PORT=3001` y `ALLOWED_ORIGIN=http://localhost:5174` en el `.env` local del backend. En otra terminal ejecuta `cd frontend`, `npm ci` y `npm run dev`; la interfaz estará en `http://localhost:5174`. Para compilar y revisar: `npm run lint` y `npm run build`.
+
+El navegador usa el token JWT de la sesión y no recibe API Keys privadas. Los clientes de integración que no son navegador siguen autenticándose con API Key.

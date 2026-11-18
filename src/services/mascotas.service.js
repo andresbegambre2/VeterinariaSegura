@@ -1,23 +1,8 @@
-const { store } = require("../data/store");
-const createCrudService = require("./base.service");
-const HttpError = require("./http-error");
-
-const service = createCrudService(store.mascotas, "Mascota", {
-  validate(data) {
-    if (!store.propietarios.some((p) => p.id === data.propietarioId)) {
-      throw new HttpError(400, "El propietario indicado no existe");
-    }
-  },
-  beforeRemove(id) {
-    if (store.citas.some((c) => c.mascotaId === id)) {
-      throw new HttpError(409, "No se puede eliminar una mascota que tiene citas");
-    }
-  }
-});
-
-service.getCitas = (id) => {
-  service.getById(id);
-  return store.citas.filter((c) => c.mascotaId === Number(id));
+const crud = require('./base.service');
+const { consultar } = require('../config/database');
+const service = crud('mascotas',{nombre:'nombre',especie:'especie',raza:'raza',edad:'edad',propietarioId:'propietario_id'},'Mascota');
+service.getCitas = async id => {
+  await service.getById(id);
+  return (await consultar(`SELECT id, TO_CHAR(fecha,'YYYY-MM-DD') AS fecha, TO_CHAR(hora,'HH24:MI') AS hora, motivo,estado,mascota_id AS "mascotaId",veterinario_id AS "veterinarioId" FROM public.citas WHERE mascota_id=$1 ORDER BY fecha,hora`,[id])).rows;
 };
-
 module.exports = service;
